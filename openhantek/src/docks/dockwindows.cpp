@@ -18,6 +18,8 @@ void SetupDockWidget(QDockWidget *dockWindow, QWidget *dockWidget, QLayout *layo
     dockWindow->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockWidget->setLayout(layout);
     dockWidget->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed, QSizePolicy::DefaultType));
+    dockWidget->setContentsMargins(0,0,0,0);
+    dockWindow->setContentsMargins(0,0,0,0);
     dockWindow->setWidget(dockWidget);
 }
 

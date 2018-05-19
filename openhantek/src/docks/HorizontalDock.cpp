@@ -70,6 +70,7 @@ HorizontalDock::HorizontalDock(DsoSettingsScope *scope, QWidget *parent, Qt::Win
     this->dockLayout->addWidget(this->formatComboBox, 4, 1);
 
     this->dockWidget = new QWidget();
+    this->dockWidget->setContentsMargins(0,0,0,0);
     SetupDockWidget(this, dockWidget, dockLayout);
 
     // Connect signals and slots
