@@ -39,15 +39,26 @@ CheckExitCodeAndExitIfError("tar")
 
 get_filename_component(_vs_bin_path "${CMAKE_LINKER}" DIRECTORY)
 
-execute_process(
-    #COMMAND "${_vs_bin_path}/lib.exe" ${LIBEXE_64} /def:${CMAKE_BINARY_DIR}/fftw/libfftw3-3.def /out:${CMAKE_BINARY_DIR}/fftw/libfftw3-3.lib
-    COMMAND "i686-w64-mingw32-dlltool" ${LIBEXE_64} -d ${CMAKE_BINARY_DIR}/fftw/libfftw3-3.def -l ${CMAKE_BINARY_DIR}/fftw/libfftw3-3.lib
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/fftw"
-    OUTPUT_VARIABLE OutVar
-    ERROR_VARIABLE ErrVar
-    RESULT_VARIABLE ExitCode)
-#CheckExitCodeAndExitIfError("lib.exe: ${OutVar} ${ErrVar}")
-CheckExitCodeAndExitIfError("dlltool: ${OutVar} ${ErrVar}")
+if(CMAKE_HOST_UNIX AND WIN32)
+    set(LIBTOOL_BINARY_NAME "i686-w64-mingw32-dlltool")
+    execute_process(
+	COMMAND ${LIBTOOL_BINARY_NAME} ${LIBEXE_64} -d ${CMAKE_BINARY_DIR}/fftw/libfftw3-3.def -l ${CMAKE_BINARY_DIR}/fftw/libfftw3-3.lib
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/fftw"
+	OUTPUT_VARIABLE OutVar
+	ERROR_VARIABLE ErrVar
+	RESULT_VARIABLE ExitCode)
+    CheckExitCodeAndExitIfError("${LIBTOOL_BINARY_NAME}: ${OutVar} ${ErrVar}")
+
+else()
+    set(LIBTOOL_BINARY_NAME "lib.exe")
+    execute_process(
+	COMMAND ${_vs_bin_path}/${LIBTOOL_BINARY_NAME} ${LIBEXE_64} /def:${CMAKE_BINARY_DIR}/fftw/libfftw3-3.def /out:${CMAKE_BINARY_DIR}/fftw/libfftw3-3.lib
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/fftw"
+	OUTPUT_VARIABLE OutVar
+	ERROR_VARIABLE ErrVar
+	RESULT_VARIABLE ExitCode)
+    CheckExitCodeAndExitIfError("${LIBTOOL_BINARY_NAME}: ${OutVar} ${ErrVar}")
+endif()
 
 target_link_libraries(${PROJECT_NAME} "${CMAKE_BINARY_DIR}/fftw/libfftw3-3.lib")
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_BINARY_DIR}/fftw")
